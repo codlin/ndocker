@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+# pylint: disable=W0614
 import sys
 import time
 import random
@@ -29,11 +31,23 @@ class DockerNetworking(object):
         if interface:
             self.vswitch.add_port(br_name, interface)
         
-        run_cmd('ifconfig {} up'.format(br_name)
+        run_cmd('ifconfig {} up'.format(br_name))
 
         if netaddr.valid_ipv4(br_ip):
-            run_cmd('ifconfig {} {}'.format(br_name, br_ip)
+            run_cmd('ifconfig {} {}'.format(br_name, br_ip))
     
+    def config_container(self, container_name, br_name, veth_name, ip, tag=0, gw=False, txoff=False):
+        logger.info("Configure for container: {}".format(container_name))
+        nspid = self.docker.nspid(container_name)
+
+        self._create_veth(container_name, br_name, veth_name, tag)
+
+        logger.info("Container {}: add ip address {} for {}.\n".format(container_name, ip, veth_name))
+        self._config_ip(nspid, veth_name, ip, txoff)
+
+        if gw and netaddr.valid_ipv4(gw):
+            self._config_add_route(container_name, gw)
+        
     def _create_veth(self, container_name, br_name, container_veth, tag_id=0):
         nspid = self.docker.nspid(container_name)
         # Generate vethnet pair
@@ -62,23 +76,20 @@ class DockerNetworking(object):
         run_cmd("ip link set dev {} name {} netns {}".format(veth_name_peer, container_veth, nspid))
         logger.info("Container {}: map ip device (container_out:{}, container_in:{}).".format(container_name, veth_name_peer, container_veth))
 
-        #up veth in container
+        #activate veth in container
         run_cmd("nsenter -t {} -n ip link set dev {} up".format(nspid, container_veth))
 
         logger.info("Container {}: create ethnet {} successfully.".format(container_name, container_veth))
 
-    def config_container(container_name, veth_name, ip, txoff=False):
-        nspid = self.docker.nspid(container_name)
+    def _config_ip(self, nspid, veth_name, ip, txoff=False):
         run_cmd("nsenter -t {} -n ip addr add {} dev {}".format(nspid, ip, veth_name))
-        logger.info("Container {}: add ip address {} for {}.\n".format(container_name, ip, veth_name))
         if txoff:
-            for i in range(2):
+            for _ in range(2):
                 cmd = "nsenter -t {} -n ethtool -K {} tx off".format(nspid, veth_name)
                 run_cmd(cmd)
                 time.sleep(1)
-
-    def config_add_net_route(container_name, veth_name, gw_ip):
-        nspid = self.docker.nspid(container_name)
-
+        
+    def _config_add_route(self, container_name, gw_ip):
         cmd = "docker exec -t -i {} sudo route add default gw {}".format(container_name, gw_ip)
         run_cmd(cmd)
+    

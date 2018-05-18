@@ -17,17 +17,17 @@ import yaml
 class Yaml(object):
     def __init__(self, yaml_file):
         instream = file(yaml_file, 'r')
-        self._dict = yaml.load(instream)
+        self.__dict__ = yaml.safe_load(instream)
     
     @property
     def infos(self):
-        return self._dict
+        return self.__dict__
 
     def update(self, **kwargs):
         if kwargs:
-            self._dict.update(kwargs)
+            self.__dict__.update(kwargs)
     
     def dump(self, to_path_file, flow_style=False):
         outstream = file(to_path_file, 'w')
-        yaml.dump(self._dict, outstream, default_flow_style=flow_style)
+        yaml.dump(self.__dict__, outstream, default_flow_style=flow_style)
         outstream.close()

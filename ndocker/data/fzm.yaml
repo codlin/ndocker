@@ -1,40 +1,37 @@
 ---
-container_name: team01
-hostname: team01-nj
-volumes: 
-- "-v /etc/localtime:/etc/localtime:ro"
-ports:
-- ":5900"
-- ":22"
-vnc_resolution: 1366x768
+version: "1"
+services:
+  fzm01:
+    hostname: fzm01-nj
+    image: 135.242.139.122:5000/ute8
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - ":22"
+      - ":5900"
+    networks:
+      - br-rd
+      - br-lmp
+      - br-s1
+      - br-in
+    vnc_resolution: 1366x768
 networks:
-- bridge: br-rd
-  network:
-  - ip: 0.0.0.0/24
-    vtag: 0
-    gw: 0.0.0.0
-- bridge: br-lmp
-  network:
-  - ip: 192.168.255.126/24
-    vtag: 0
-    gw: 
-- bridge: br-s1
-  network:
-  - ip: 10.10.70.20/24
-    vtag: 700
-    gw: 
-  - ip: 10.10.71.20/24
-    vtag: 701
-    gw: 
-  - ip: 10.10.72.20/24
-    vtag: 702
-    gw: 
-  - ip: 10.10.73.20/24
-    vtag: 703
-    gw: 
-- bridge: br-in
-  network:
-  - ip: 80.80.80.10/24
-    vtag: 0
-    gw: 
-images: 135.242.139.122:5000/ute8
+  br-rd:
+    - ip: 0.0.0.0/24
+      vtag: 0
+      gw: 0.0.0.0
+  br-lmp:
+    - ip: 192.168.255.126/24
+      vtag: 0
+  br-s1:
+    - ip: 10.10.70.20/24
+      vtag: 700
+    - ip: 10.10.71.20/24
+      vtag: 701
+    - ip: 10.10.72.20/24
+      vtag: 702
+    - ip: 10.10.73.20/24
+      vtag: 703
+  br-in:
+    - ip: 80.80.80.10/24
+      vtag: 0

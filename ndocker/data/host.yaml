@@ -1,10 +1,10 @@
 ---
-vswitchs:
-- bridge_name: br-lmp
+vswitches:
+- bridge: br-lmp
   physicalport: eth1
-- bridge_name: br-s1
+- bridge: br-s1
   physicalport: eth2
-- bridge_name: br-rd
+- bridge: br-rd
   physicalport: eth3
-- bridge_name: br-in
+- bridge: br-in
   physicalport: None
