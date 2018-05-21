@@ -22,6 +22,8 @@ rootpath = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 sys.path.insert(0, rootpath)
 # pylint: disable=no-name-in-module,import-error
 from rootpath.common.parser import line_parser
+from rootpath.common.utils import run
+from rootpath.common import logger
 
 INSTALLED_DOCKER = find_executable('docker')
 
@@ -53,8 +55,11 @@ class DockerCmd(object):
         # Returns outputs in str type.
         return process
     
-    def run(self, cmd):
-        result = self.execute(cmd)
+    def pull(self, img):
+        self.execute("pull {}".format(img))
+
+    def run(self, args):
+        result = self.execute("run {}".format(args))
         return result
     
     def stop(self, containers):
@@ -73,6 +78,25 @@ class DockerCmd(object):
         cmd = "rm {}".format(" ".join(containers))
         self.execute(cmd)
     
+    def ps(self, args=""):
+        return self.execute("ps {}".format(args))
+    
+    def isExist(self, container):
+        res = self.ps("-a --format '{{.Names}}' ")
+        if container not in '\n'.join(res):
+            logger.info('Container {} does not exist.'.format(container))
+            return False
+        
+        return True
+    
+    def isHealth(self, container):
+        res = self.ps("--filter status=running  --filter 'name={}$' ".format(container))
+        if ' {}'.format(container) not in '\n'.join(res):
+            logger.info('Container {} is not in health.'.format(container))
+            return False
+        
+        return True
+
     def nspid(self, container):
         cmd = "inspect -f '{{.State.Pid}}' {}".format(container)
         nspid = self.execute(cmd).replace('\n', '')

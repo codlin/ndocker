@@ -36,7 +36,7 @@ class DockerNetworking(object):
         if netaddr.valid_ipv4(br_ip):
             run_cmd('ifconfig {} {}'.format(br_name, br_ip))
     
-    def config_container(self, container_name, br_name, veth_name, ip, tag=0, gw=False, txoff=False):
+    def attach_container(self, container_name, br_name, veth_name, ip, tag=0, gw=False, txoff=False):
         logger.info("Configure for container: {}".format(container_name))
         nspid = self.docker.nspid(container_name)
 
@@ -47,11 +47,16 @@ class DockerNetworking(object):
 
         if gw and netaddr.valid_ipv4(gw):
             self._config_add_route(container_name, gw)
+    
+    def dettach_container(self, container_name, br_name, veth_name):
+        veth_name_host = self._veth_name_host(container_name, veth_name)
+        self.vswitch.del_port(br_name, veth_name_host)
+        run_cmd("ip link del {}".format(veth_name_host))
         
     def _create_veth(self, container_name, br_name, container_veth, tag_id=0):
         nspid = self.docker.nspid(container_name)
         # Generate vethnet pair
-        veth_name_host = "-".join([container_name, container_veth])
+        veth_name_host = self._veth_name_host(container_name, container_veth)
         logger.info("veth_name_host: {}".format(veth_name_host))
 
         run_cmd("ip link del {}".format(veth_name_host))
@@ -80,7 +85,10 @@ class DockerNetworking(object):
         run_cmd("nsenter -t {} -n ip link set dev {} up".format(nspid, container_veth))
 
         logger.info("Container {}: create ethnet {} successfully.".format(container_name, container_veth))
-
+    
+    def _veth_name_host(self, container_name, veth_name):
+        return "-".join([container_name, veth_name])
+        
     def _config_ip(self, nspid, veth_name, ip, txoff=False):
         run_cmd("nsenter -t {} -n ip addr add {} dev {}".format(nspid, ip, veth_name))
         if txoff:
