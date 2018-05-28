@@ -21,9 +21,11 @@ setup(name='ndocker',
           'Topic :: Software Development :: Libraries :: Python Modules',
           'License :: OSI Approved :: Apache License',
           'Programming Language :: Python :: 2.7', ],
+       install_requires=['Click', ],
        entry_points={
            'console_scripts': [
-           'ndocker=ndocker:main'],},
+           'ndocker=ndocker.command_line:cli'],},
        packages=['ndocker'],
+       
        include_package_data=True,
        zip_safe=False)
