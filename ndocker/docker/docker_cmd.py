@@ -18,12 +18,12 @@ import shlex
 import netaddr
 from distutils.spawn import find_executable
 
-rootpath = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
-sys.path.insert(0, rootpath)
+root = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
+sys.path.insert(0, root)
 # pylint: disable=no-name-in-module,import-error
-from rootpath.common.parser import line_parser
-from rootpath.common.utils import run
-from rootpath.common import logger
+from root.common.parser import line_parser
+from root.common.utils import run
+from root.common import logger
 
 INSTALLED_DOCKER = find_executable('docker')
 
@@ -104,10 +104,10 @@ class DockerCmd(object):
     
 class DockerCmdExecError(Exception):
     """
-    Raised exception when 'ovs-vsctl' command returns non-zero exit code.
+    Raised exception when 'docker' command returns non-zero exit code.
     """
 
 class DockerCmdParseError(Exception):
     """
-    Raised exception when fails to parse the outputs of 'ovs-vsctl' command.
+    Raised exception when fails to parse the outputs of 'docker' command.
     """

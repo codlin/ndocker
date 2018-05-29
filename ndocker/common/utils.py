@@ -62,13 +62,3 @@ class SshClient(object):
     def run_cmd(self, command):
         logger.info(command)
         return self.ssh.exec_command(command)
-
-def set_value_or_raise_exception(class_object, key, **kwargs):
-    if kwargs.get(key) is None:
-        logger.error("Class '%s' requires parameter '%s' to be set but parameter is missing in config" % (class_object.__class__.__name__, key))
-        raise SystemExit
-    
-    setattr(class_object, key, kwargs.get(key))
-
-def set_value_or_use_default(class_object, key, default_value, **kwargs):
-    setattr(class_object, key, kwargs.get(key, default_value))

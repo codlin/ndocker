@@ -36,6 +36,9 @@ class DockerNetworking(object):
         if netaddr.valid_ipv4(br_ip):
             run_cmd('ifconfig {} {}'.format(br_name, br_ip))
     
+    def del_bridge(self, br_name):
+        self.vswitch.del_br(br_name)
+    
     def attach_container(self, container_name, br_name, veth_name, ip, tag=0, gw=False, txoff=False):
         logger.info("Configure for container: {}".format(container_name))
         nspid = self.docker.nspid(container_name)

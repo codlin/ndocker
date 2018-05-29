@@ -19,11 +19,11 @@ import shlex
 import netaddr
 from distutils.spawn import find_executable
 
-rootpath = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
-sys.path.insert(0, rootpath)
+root = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
+sys.path.insert(0, root)
 # pylint: disable=no-name-in-module,import-error
-from rootpath.common import logger
-from rootpath.common.parser import line_parser
+from root.common import logger
+from root.common.parser import line_parser
 
 INSTALLED_OVS_VSCTL = find_executable('ovs-vsctl')
 
@@ -59,10 +59,8 @@ class VSCtl(object):
         :return: Output of 'ovs-vsctl' command. If `parser` is not specified,
          returns an instance of 'subprocess.Popen'. If `parser` is specified,
          the given `parser` is applied to parse the outputs.
-        :raise: * ovs_vsctl.exception.VSCtlCmdExecError -- When the given
-                  command fails.
-                * ovs_vsctl.exception.VSCtlCmdParseError -- When the given
-                  parser fails to parse the outputs.
+        :raise: * vsctl.VSCtlCmdExecError -- When the given command fails.
+                * vsctl.exception.VSCtlCmdParseError -- When the given parser fails to parse the outputs.
         """
 
         # Constructs command.

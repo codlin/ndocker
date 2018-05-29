@@ -1,7 +1,13 @@
 # pylint: disable=W0614
-from common import logger
-from common.utils import *
-from common.yamler import Yaml
+import os
+import sys
+
+root = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
+sys.path.insert(0, root)
+# pylint: disable=no-name-in-module,import-error
+from root.common import logger
+from root.common.utils import *
+from root.common.yamler import Yaml
 
 class ContainerCfg(object):
     def __init__(self, name, **kwargs):

@@ -5,7 +5,7 @@ from .networks import DockerNetworking
 from .common.yamler import Yaml
 from .common import logger
 from .docker.docker_cmd import *
-from configuration import *
+from necfg import *
 
 class NE(object):
     __metaclass__ = ABCMeta
@@ -25,7 +25,12 @@ class Host(NE):
         vswitches = self.infos.get('vswitches')
         for vswitch in vswitches:
             self.networking.create_bridge(vswitch.get('bridge_name'), vswitch.get('physicalport'))
-
+    
+    def reset_networks(self):
+        vswitches = self.infos.get('vswitches')
+        for vswitch in vswitches:
+            self.networking.del_bridge(vswitch.get('bridge_name'))
+        
 class Container(NE):
     def __init__(self, yaml_cfg):
         self.cfg = ServicesCfg(yaml_cfg)
@@ -61,6 +66,8 @@ class Container(NE):
             if not docker.isHealth(container):
                 logger.info('Create {} failed.'.format(container))
                 raise DockerCmdExecError()
+        
+        self.create_networks()
     
     def start_service(self):
         docker = DockerCmd()
@@ -75,6 +82,8 @@ class Container(NE):
             if not docker.isHealth(container):
                 logger.info('Create {} failed.'.format(container))
                 raise DockerCmdExecError()
+         
+        self.create_networks()
     
     def stop_service(self):
         docker = DockerCmd()
@@ -85,3 +94,6 @@ class Container(NE):
             for br_name, _ in infos.networks.items():
                 self.networking.dettach_container(container, br_name, "eth{}".format(i))
                 i += 1
+    
+    def rm_service(self):
+        docker = DockerCmd()
