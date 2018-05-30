@@ -48,7 +48,7 @@ def container_cli():
 # commands for host
 @host_cli.command("create", help=host_cmds.get('create'))
 @click.argument('filename')
-@click.option('path', '--path', type=click.Path(exists=True), help=container_opts.get('path'))
+@click.option('path', '--path', type=click.Path(exists=False), help=container_opts.get('path'))
 def host_create(filename, path):
     create_host_cfg(filename, path)
 
@@ -56,20 +56,20 @@ def host_create(filename, path):
 @click.argument('filename')
 @click.option('path', '--path', type=click.Path(exists=True), help=container_opts.get('path'))
 def host_config(filename, path):
-    click.echo("I'm host.")
+    config_host(filename, path)
 
 @host_cli.command("reset", help=host_cmds.get('reset'))
 @click.confirmation_option(prompt='All networks will be lost, are you sure you want to delete?')
 @click.argument('filename')
 @click.option('path', '--path', type=click.Path(exists=True), help=container_opts.get('path'))
 def host_reset(filename, path):
-    click.echo("I'm host.")
+    reset_host(filename, path)
 
 # commands for cli
 @cli.command("create", cls=MyCommand, help=container_cmds.get('create'))
 @click.argument('container')
 @click.argument('device', type=click.Choice(['fzm', 'fzc']))
-@click.option('path', '--path', type=click.Path(exists=True), help=container_opts.get('path'))
+@click.option('path', '--path', type=click.Path(exists=False), help=container_opts.get('path'))
 def cli_create(container, device, path):
     create_container_cfg(container, device, path)
 
@@ -77,40 +77,42 @@ def cli_create(container, device, path):
 @click.argument('container')
 @click.option('path', '--path', type=click.Path(exists=True), help=container_opts.get('path'))
 def cli_restart(container, path):
-    pass
+    restart_container(container, path)
 
 @cli.command("rm", cls=MyCommand, help=container_cmds.get('rm'))
 @click.confirmation_option(prompt='All data will be lost, are you sure you want to delete?')
 @click.argument('container')
-def cli_rm(container):
-    pass
+@click.option('path', '--path', type=click.Path(exists=True), help=container_opts.get('path'))
+def cli_rm(container, path):
+    rm_container(container, path)
 
 @cli.command("run", cls=MyCommand, help=container_cmds.get('run'))
-@click.argument('path', type=click.Path(exists=True))
-def cli_run(path):
-    pass
+@click.argument('filename', type=click.Path(exists=True))
+def cli_run(filename):
+    run_container(filename)
     
 @cli.command("start", cls=MyCommand, help=container_cmds.get('start'))
 @click.argument('container')
 @click.option('path', '--path', type=click.Path(exists=True), help=container_opts.get('path'))
 def cli_start(container, path):
-    pass
+    start_container(container, path)
 
 @cli.command("stop", cls=MyCommand, help=container_cmds.get('stop'))
 @click.argument('container')
-def cli_stop(container):
-    pass
+@click.option('path', '--path', type=click.Path(exists=True), help=container_opts.get('path'))
+def cli_stop(container, path):
+    stop_container(container, path)
 
 @cli.command("up", cls=MyCommand, help=container_cmds.get('up'))
 @click.option('path', '--path', type=click.Path(exists=True), help=container_opts.get('path'))
 def cli_up(path):
-    pass
+    up_containers(path)
 
 # commands for container_cli
 @container_cli.command("create", help=container_cmds.get('create'))
 @click.argument('container')
 @click.argument('device', type=click.Choice(['fzm', 'fzc']))
-@click.option('path', '--path', type=click.Path(exists=True), help=container_opts.get('path'))
+@click.option('path', '--path', type=click.Path(exists=False), help=container_opts.get('path'))
 def container_create(container, device, path):
     create_container_cfg(container, device, path)
 
@@ -118,34 +120,36 @@ def container_create(container, device, path):
 @click.argument('container')
 @click.option('path', '--path', type=click.Path(exists=True), help=container_opts.get('path'))
 def container_restart(container, path):
-    pass
+    restart_container(container, path)
 
 @container_cli.command("rm", help=container_cmds.get('rm'))
 @click.confirmation_option(prompt='All data will be lost, are you sure you want to delete?')
 @click.argument('container')
-def container_rm(container):
-    pass
+@click.option('path', '--path', type=click.Path(exists=True), help=container_opts.get('path'))
+def container_rm(container, path):
+    rm_container(container, path)
 
 @container_cli.command("run", help=container_cmds.get('run'))
-@click.argument('path', type=click.Path(exists=True))
-def container_run(path):
-    pass
+@click.argument('filename', type=click.Path(exists=True))
+def container_run(filename):
+    run_container(filename)
     
 @container_cli.command("start", help=container_cmds.get('start'))
 @click.argument('container')
 @click.option('path', '--path', type=click.Path(exists=True), help=container_opts.get('path'))
 def container_start(container, path):
-    pass
+    start_container(container, path)
 
 @container_cli.command("stop", help=container_cmds.get('stop'))
 @click.argument('container')
-def container_stop(container):
-    pass
+@click.option('path', '--path', type=click.Path(exists=True), help=container_opts.get('path'))
+def container_stop(container, path):
+    stop_container(container, path)
 
 @container_cli.command("up", help=container_cmds.get('up'))
 @click.option('path', '--path', type=click.Path(exists=True), help=container_opts.get('path'))
 def container_up(path):
-    pass
+    up_containers(path)
 
 cli.add_command(host_cli)
 cli.add_command(container_cli)

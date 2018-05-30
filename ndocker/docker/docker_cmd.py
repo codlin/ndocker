@@ -20,10 +20,9 @@ from distutils.spawn import find_executable
 
 root = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 sys.path.insert(0, root)
-# pylint: disable=no-name-in-module,import-error
-from root.common.parser import line_parser
-from root.common.utils import run
-from root.common import logger
+from common.parser import line_parser
+from common.utils import run
+from common import logger
 
 INSTALLED_DOCKER = find_executable('docker')
 

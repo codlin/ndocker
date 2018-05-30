@@ -24,9 +24,9 @@ from nose.tools import eq_
 from nose.tools import raises
 from six.moves import mock
 
-from ovs_vsctl.vsctl import VSCtl
-from ovs_vsctl.exception import VSCtlCmdExecError
-from ovs_vsctl.exception import VSCtlCmdParseError
+from ndocker.ovs import VSCtl
+from ndocker.ovs import VSCtlCmdExecError
+from ndocker.ovs import VSCtlCmdParseError
 
 
 LOG = logging.getLogger(__name__)

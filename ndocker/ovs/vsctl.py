@@ -22,8 +22,9 @@ from distutils.spawn import find_executable
 root = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 sys.path.insert(0, root)
 # pylint: disable=no-name-in-module,import-error
-from root.common import logger
-from root.common.parser import line_parser
+from common import logger
+from common import utils
+from common.parser import line_parser
 
 INSTALLED_OVS_VSCTL = find_executable('ovs-vsctl')
 
@@ -80,7 +81,7 @@ class VSCtl(object):
 
         # Executes command.
         # pylint: disable=undefined-variable
-        process = run(args)
+        process = utils.run(args)
         if (process.returncode != 0) and (not ignore_errcode):
             raise VSCtlCmdExecError(process.stderr.read())
 

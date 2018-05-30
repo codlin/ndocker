@@ -3,10 +3,11 @@ import sys
 import shutil
 from ne import Host
 from ne import Container
+from os.path import expanduser
 
 root = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 data = os.path.join(root, 'data')
-DEFAULT_CONFIGURATION_PATH = "~/.ndocker/"
+DEFAULT_CONFIGURATION_PATH = os.path.join(expanduser("~"), ".ndocker")
 
 def create_host_cfg(filename, dest):
     if not filename.endswith('.yaml'):
@@ -39,12 +40,15 @@ def _create_configration(filename, ne_type, dest):
     shutil.copy(template, dest)
     print "Create configration file at: {}".format(dest)
 
-def _verify_file(func):
+def _verify_host_cfg(func):
     def wrapper(filename, path):
         if path is None:
             path = DEFAULT_CONFIGURATION_PATH
         
-        filename = os.path.join(path, filename)
+        if not filename.endswith('.yaml'):
+            filename = '{}.yaml'.format(filename)
+            
+        filename = os.path.join(path, 'host', filename)
         if not os.path.exists(filename):
             print "Configuration file doesn't exist at {}".format(filename)
             sys.exit(1)
@@ -52,15 +56,75 @@ def _verify_file(func):
         func(filename, path)
     return wrapper
 
-@_verify_file
+@_verify_host_cfg
 def config_host(filename, path):
     host = Host(filename)
     host.create_networks()
 
-@_verify_file
+@_verify_host_cfg
 def reset_host(filename, path):  
     host = Host(filename)
     host.reset_networks()
 
+def _get_container_cfg(container, path):
+    if path is None:
+        path = DEFAULT_CONFIGURATION_PATH
+        
+    subdir = os.path.join(path, 'containers')
+    if not os.path.exists(subdir):
+        print "Path doesn't exist: {}".format(subdir)
+        sys.exit(1)
+    
+    cfg = None
+    for filename in (f for f in os.listdir(subdir) if os.path.isfile(os.path.join(subdir,f))):
+        if container in filename:
+            cfg = filename
+            break
+    
+    if cfg is None: 
+        print "Configuration file doesn't exist at {}".format(cfg)
+        sys.exit(1)
+    
+    cfg = os.path.join(subdir, cfg)
+    if not os.path.exists(cfg):
+        print "Configuration file doesn't exist at {}".format(cfg)
+        sys.exit(1)
+    
+    return cfg
+
+def run_container(filename):
+    ndocker = Container(filename)
+    ndocker.create_service()
+
+def stop_container(container, path):
+    cfg = _get_container_cfg(container, path)
+    ndocker = Container(cfg)
+    ndocker.stop_service()
+
+def start_container(container, path):
+    cfg = _get_container_cfg(container, path)
+    ndocker = Container(cfg)
+    ndocker.start_service()
+
 def restart_container(container, path):
-    pass
+    cfg = _get_container_cfg(container, path)  
+    ndocker = Container(cfg)
+    ndocker.restart_service()
+
+def rm_container(container, path):
+    cfg = _get_container_cfg(container, path)  
+    ndocker = Container(cfg)
+    ndocker.rm_service()
+
+def up_containers(path):
+    if path is None:
+        path = DEFAULT_CONFIGURATION_PATH
+    
+    subdir = os.path.join(path, 'containers')
+    if not os.path.exists(subdir):
+        print "Path doesn't exist: {}".format(subdir)
+        sys.exit(1)
+    
+    for filename in (f for f in os.listdir(subdir) if os.path.isfile(os.path.join(subdir,f))):
+        ndocker = Container(filename)
+        ndocker.restart_service()

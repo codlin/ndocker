@@ -1,10 +1,10 @@
 # pylint: disable=W0614
 import time
 from abc import ABCMeta, abstractmethod
-from .networks import DockerNetworking
-from .common.yamler import Yaml
-from .common import logger
-from .docker.docker_cmd import *
+from networks import DockerNetworking
+from common.yamler import Yaml
+from common import logger
+from docker.docker_cmd import *
 from necfg import *
 
 class NE(object):
@@ -13,23 +13,30 @@ class NE(object):
     def __init__(self):
         self.networking = DockerNetworking()
     
+    # @property
+    # def Networking(self):
+    #     return self.networking
+
     @abstractmethod
     def create_networks(self, **kwargs):
         raise NotImplementedError()
 
 class Host(NE):
     def __init__(self, ymal_cfg):
+        super(Host, self).__init__()
+
         self.infos = Yaml(ymal_cfg).infos
     
     def create_networks(self, **kwargs):
         vswitches = self.infos.get('vswitches')
         for vswitch in vswitches:
-            self.networking.create_bridge(vswitch.get('bridge_name'), vswitch.get('physicalport'))
+            self.networking.create_bridge(vswitch.get('bridge'), vswitch.get('physicalport'))
     
     def reset_networks(self):
         vswitches = self.infos.get('vswitches')
+        logger.info(vswitches)
         for vswitch in vswitches:
-            self.networking.del_bridge(vswitch.get('bridge_name'))
+            self.networking.del_bridge(vswitch.get('bridge'))
         
 class Container(NE):
     def __init__(self, yaml_cfg):
@@ -95,5 +102,13 @@ class Container(NE):
                 self.networking.dettach_container(container, br_name, "eth{}".format(i))
                 i += 1
     
+    def restart_service(self):
+        self.stop_service()
+        self.start_service()
+        
     def rm_service(self):
+        self.stop_service()
+
         docker = DockerCmd()
+        for container in self.cfg.containers():
+            docker.rm(container)
