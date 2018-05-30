@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 from os import path
 
 here = path.abspath(path.dirname(__file__))
@@ -11,7 +11,6 @@ setup(name='ndocker',
       version='1.0.0',
       description='docker network configration',
       long_description=long_description,
-      long_description_content_type='text/markdown',
       url='http://github.com/codlin/ndocker',
       author='Sean Z',
       author_email='sean.z.ealous@gmail.com',
@@ -25,6 +24,6 @@ setup(name='ndocker',
        entry_points={
            'console_scripts': [
            'ndocker=ndocker.command_line:cli'],},
-       packages=['ndocker'],
+       packages=find_packages(exclude=['ndocker_test']),
        include_package_data=True,
        zip_safe=False)
