@@ -75,8 +75,7 @@ class DockerNetworking(object):
 
         self.vswitch.del_port(br_name, veth_name_host)
 
-        tag = "" if tag_id==0 else "tag={}".format(tag_id)
-        res = self.vswitch.add_port(br_name, veth_name_host, tag)
+        res = self.vswitch.add_port(br_name, veth_name_host, tag_id)
         logger.info("Add port {} into {}.".format(veth_name_host, br_name))
 
         run_cmd("ifconfig " + veth_name_host + " up")

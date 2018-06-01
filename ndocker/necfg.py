@@ -21,16 +21,18 @@ class ContainerCfg(object):
         self.volumes = kwargs.get('volumes')
         self.ports = kwargs.get('ports')
         self.networks = kwargs.get('networks')
+        self.network_mode = kwargs.get('network_mode')
         self.vnc_resolution = kwargs.get('vnc_resolution')
         
 class ServicesCfg(object):
     def __init__(self, yaml_cfg):
+        logger.debug("cfg: {}".format(yaml_cfg))
         self.cfg = Yaml(yaml_cfg).infos
-        self._verify_data()
-
         self.services = self.cfg['services']
         self.networks = self.cfg['networks']
-    
+
+        self._verify_data()
+
     '''
     Return containers name in list.
     '''
@@ -45,9 +47,13 @@ class ServicesCfg(object):
             logger.error('Unknown container name {}.'.format(container_name))
             return None
         
-        container = self.cfg.services[container_name]
+        container = self.services.get(container_name)
         container['networks'] = dict((i, self.networks[i]) for i in container['networks'])
         return ContainerCfg(container_name, **container)
 
     def _verify_data(self):
-        pass
+        containers = [container for container in self.services.keys() if len(container)>5]
+        if len(containers) > 0:
+            logger.error("The length of the container name > 5:{}".format(' '.join(containers)))
+            sys.exit(1)
+    

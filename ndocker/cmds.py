@@ -7,7 +7,8 @@ from os.path import expanduser
 
 root = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 data = os.path.join(root, 'data')
-DEFAULT_CONFIGURATION_PATH = os.path.join(expanduser("~"), ".ndocker")
+HOME = expanduser("~")
+DEFAULT_CONFIGURATION_PATH = os.path.join(HOME, ".ndocker")
 
 def create_host_cfg(filename, dest):
     if not filename.endswith('.yaml'):
@@ -92,19 +93,15 @@ def _get_container_cfg(container, path):
     
     return cfg
 
-def run_container(filename):
-    ndocker = Container(filename)
-    ndocker.create_service()
+def start_container(container, path):
+    cfg = _get_container_cfg(container, path)
+    ndocker = Container(cfg)
+    ndocker.start_service()
 
 def stop_container(container, path):
     cfg = _get_container_cfg(container, path)
     ndocker = Container(cfg)
     ndocker.stop_service()
-
-def start_container(container, path):
-    cfg = _get_container_cfg(container, path)
-    ndocker = Container(cfg)
-    ndocker.start_service()
 
 def restart_container(container, path):
     cfg = _get_container_cfg(container, path)  
@@ -126,5 +123,5 @@ def up_containers(path):
         sys.exit(1)
     
     for filename in (f for f in os.listdir(subdir) if os.path.isfile(os.path.join(subdir,f))):
-        ndocker = Container(filename)
+        ndocker = Container(os.path.join(subdir, filename))
         ndocker.restart_service()

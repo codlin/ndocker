@@ -20,6 +20,7 @@ from distutils.spawn import find_executable
 
 root = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 sys.path.insert(0, root)
+# pylint: disable=no-name-in-module,import-error
 from common.parser import line_parser
 from common.utils import run
 from common import logger
@@ -32,6 +33,7 @@ class DockerCmd(object):
 
     def execute(self, command, parser=line_parser, ignore_errcode=False):
         # Constructs command.
+        logger.debug(command)
         args = [self.docker_path]
         args.extend(shlex.split(command))
 
@@ -61,19 +63,19 @@ class DockerCmd(object):
         result = self.execute("run {}".format(args))
         return result
     
-    def stop(self, containers):
+    def stop(self, *containers):
         cmd = "stop {}".format(" ".join(containers))
-        self.execute(cmd)
+        self.execute(cmd, ignore_errcode=True)
     
-    def start(self, containers):
+    def start(self, *containers):
         cmd = "start {}".format(" ".join(containers))
         self.execute(cmd)
 
-    def restart(self, containers):
+    def restart(self, *containers):
         cmd = "restart {}".format(" ".join(containers))
         self.execute(cmd)
     
-    def rm(self, containers):
+    def rm(self, *containers):
         cmd = "rm {}".format(" ".join(containers))
         self.execute(cmd)
     
@@ -97,8 +99,10 @@ class DockerCmd(object):
         return True
 
     def nspid(self, container):
-        cmd = "inspect -f '{{.State.Pid}}' {}".format(container)
-        nspid = self.execute(cmd).replace('\n', '')
+        cmd = "inspect -f '{{{{.State.Pid}}}}' {}".format(container)
+        res = self.execute(cmd)
+        logger.debug(res)
+        nspid = '\n'.join(res).replace('\n', '')
         return nspid
     
 class DockerCmdExecError(Exception):

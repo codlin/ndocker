@@ -114,7 +114,7 @@ class VSCtl(object):
             self.run('del-br {}'.format(br_name))
     
     def add_port(self, br_name, port_name, tag_id=0):
-        tag = "" if tag_id==0 else "tag={}".format(tag_id)
+        tag = "" if tag_id==0 or tag_id == "" else "tag={}".format(tag_id)
         cmd = "add-port {} {} {}".format(br_name, port_name, tag)
         result = self.run(cmd, parser=line_parser)
         logger.info('\n'.join(result))
@@ -122,7 +122,7 @@ class VSCtl(object):
     
     def del_port(self, br_name, port_name):
         cmd = "del-port {} {}".format(br_name, port_name)
-        result = self.run(cmd, parser=line_parser)
+        result = self.run(cmd, parser=line_parser, ignore_errcode=True)
         logger.info('\n'.join(result))
     
 class VSCtlCmdExecError(Exception):

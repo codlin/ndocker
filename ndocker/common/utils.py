@@ -19,7 +19,7 @@ import socket
 import logger
 
 def run(args):
-    logger.info(args)
+    logger.debug(args)
     popen = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
     popen.wait()
 

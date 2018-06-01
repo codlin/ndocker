@@ -73,6 +73,18 @@ def host_reset(filename, path):
 def cli_create(container, device, path):
     create_container_cfg(container, device, path)
 
+@cli.command("start", cls=MyCommand, help=container_cmds.get('start'))
+@click.argument('container')
+@click.option('path', '--path', type=click.Path(exists=True), help=container_opts.get('path'))
+def cli_start(container, path):
+    start_container(container, path)
+
+@cli.command("stop", cls=MyCommand, help=container_cmds.get('stop'))
+@click.argument('container')
+@click.option('path', '--path', type=click.Path(exists=True), help=container_opts.get('path'))
+def cli_stop(container, path):
+    stop_container(container, path)
+
 @cli.command("restart", cls=MyCommand, help=container_cmds.get('restart'))
 @click.argument('container')
 @click.option('path', '--path', type=click.Path(exists=True), help=container_opts.get('path'))
@@ -85,23 +97,6 @@ def cli_restart(container, path):
 @click.option('path', '--path', type=click.Path(exists=True), help=container_opts.get('path'))
 def cli_rm(container, path):
     rm_container(container, path)
-
-@cli.command("run", cls=MyCommand, help=container_cmds.get('run'))
-@click.argument('filename', type=click.Path(exists=True))
-def cli_run(filename):
-    run_container(filename)
-    
-@cli.command("start", cls=MyCommand, help=container_cmds.get('start'))
-@click.argument('container')
-@click.option('path', '--path', type=click.Path(exists=True), help=container_opts.get('path'))
-def cli_start(container, path):
-    start_container(container, path)
-
-@cli.command("stop", cls=MyCommand, help=container_cmds.get('stop'))
-@click.argument('container')
-@click.option('path', '--path', type=click.Path(exists=True), help=container_opts.get('path'))
-def cli_stop(container, path):
-    stop_container(container, path)
 
 @cli.command("up", cls=MyCommand, help=container_cmds.get('up'))
 @click.option('path', '--path', type=click.Path(exists=True), help=container_opts.get('path'))
@@ -116,6 +111,18 @@ def cli_up(path):
 def container_create(container, device, path):
     create_container_cfg(container, device, path)
 
+@container_cli.command("start", help=container_cmds.get('start'))
+@click.argument('container')
+@click.option('path', '--path', type=click.Path(exists=True), help=container_opts.get('path'))
+def container_start(container, path):
+    start_container(container, path)
+
+@container_cli.command("stop", help=container_cmds.get('stop'))
+@click.argument('container')
+@click.option('path', '--path', type=click.Path(exists=True), help=container_opts.get('path'))
+def container_stop(container, path):
+    stop_container(container, path)
+
 @container_cli.command("restart", help=container_cmds.get('restart'))
 @click.argument('container')
 @click.option('path', '--path', type=click.Path(exists=True), help=container_opts.get('path'))
@@ -128,23 +135,6 @@ def container_restart(container, path):
 @click.option('path', '--path', type=click.Path(exists=True), help=container_opts.get('path'))
 def container_rm(container, path):
     rm_container(container, path)
-
-@container_cli.command("run", help=container_cmds.get('run'))
-@click.argument('filename', type=click.Path(exists=True))
-def container_run(filename):
-    run_container(filename)
-    
-@container_cli.command("start", help=container_cmds.get('start'))
-@click.argument('container')
-@click.option('path', '--path', type=click.Path(exists=True), help=container_opts.get('path'))
-def container_start(container, path):
-    start_container(container, path)
-
-@container_cli.command("stop", help=container_cmds.get('stop'))
-@click.argument('container')
-@click.option('path', '--path', type=click.Path(exists=True), help=container_opts.get('path'))
-def container_stop(container, path):
-    stop_container(container, path)
 
 @container_cli.command("up", help=container_cmds.get('up'))
 @click.option('path', '--path', type=click.Path(exists=True), help=container_opts.get('path'))

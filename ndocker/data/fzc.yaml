@@ -9,6 +9,7 @@ services:
     ports:
       - ":22"
       - ":5900"
+    network_mode: none
     networks:
       - br-rd
       - br-s1

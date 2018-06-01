@@ -13,10 +13,6 @@ class NE(object):
     def __init__(self):
         self.networking = DockerNetworking()
     
-    # @property
-    # def Networking(self):
-    #     return self.networking
-
     @abstractmethod
     def create_networks(self, **kwargs):
         raise NotImplementedError()
@@ -40,6 +36,7 @@ class Host(NE):
         
 class Container(NE):
     def __init__(self, yaml_cfg):
+        super(Container, self).__init__()
         self.cfg = ServicesCfg(yaml_cfg)
     
     def create_networks(self, **kwargs):
@@ -54,34 +51,13 @@ class Container(NE):
                     veth_name = "eth{}".format(i)
                     i += 1
                     self.networking.attach_container(container, br_name, veth_name, ip, tag, gw, txoff=(br_name == 'br-s1'))
-    
-    def create_service(self):
-        docker = DockerCmd()
-        for container in self.cfg.containers():
-            if docker.isExist(container):
-                logger.info('{} already exist.'.format(container))
-                continue
-            
-            infos = self.cfg.infos(container)
-            docker.pull(infos.image)
-
-            cmd = "--name {} --hostname {} --net='none' {} --init --restart=always -e VNC_RESOLUTION={} {} --privileged -d {}".format(
-                container, infos.hostname, '-p '.join(infos.ports), infos.vnc_resolution, infos.volumes, infos.image)
-            docker.run(cmd)
-            time.sleep(3)
-
-            if not docker.isHealth(container):
-                logger.info('Create {} failed.'.format(container))
-                raise DockerCmdExecError()
-        
-        self.create_networks()
-    
+           
     def start_service(self):
         docker = DockerCmd()
         for container in self.cfg.containers():
             if not docker.isExist(container):
                 logger.info('Container {} does not exist.'.format(container))
-                raise DockerCmdExecError()
+                self._create_service(container)
             
             docker.restart(container)
             time.sleep(3)
@@ -112,3 +88,20 @@ class Container(NE):
         docker = DockerCmd()
         for container in self.cfg.containers():
             docker.rm(container)
+            
+    def _create_service(self, container):
+        docker = DockerCmd()
+         
+        infos = self.cfg.infos(container)
+        docker.pull(infos.image)
+
+        logger.debug("container infos: {}".format(infos.__dict__))
+        cmd = "--name {} --hostname {} --net='{}' -p {} --init --restart=always -e VNC_RESOLUTION={} -v {} --privileged -d {}".format(
+            container, infos.hostname, infos.network_mode, ' -p '.join(infos.ports), 
+            infos.vnc_resolution, ' -v '.join(infos.volumes), infos.image)
+        docker.run(cmd)
+        time.sleep(3)
+
+        if not docker.isHealth(container):
+            logger.info('Create {} failed.'.format(container))
+            raise DockerCmdExecError()

@@ -1,11 +1,29 @@
-from setuptools import setup, find_packages
+import os
 from os import path
+from setuptools import setup, find_packages
+from setuptools.command.install import install
 
 here = path.abspath(path.dirname(__file__))
 
 # Get the long description from the README file
 with open(path.join(here, 'README.md')) as f:
     long_description = f.read()
+
+def bashcomplete():
+    cmd = "eval \"$(_NDOCKER_COMPLETE=source ndocker)\""
+    with open(path.join(path.expanduser("~"), '.bashrc'), 'r+') as f:
+        lines = f.readlines()
+        for line in lines:
+            if line.startswith(cmd):
+                return
+        
+        f.seek(0, os.SEEK_END)
+        f.write(cmd)
+
+class Install(install):
+    def run(self):
+        bashcomplete()
+        install.run(self)
 
 setup(name='ndocker',
       version='1.0.0',
@@ -14,6 +32,7 @@ setup(name='ndocker',
       url='http://github.com/codlin/ndocker',
       author='Sean Z',
       author_email='sean.z.ealous@gmail.com',
+      cmdclass={'install': Install, },
       classifiers=[
           'Development Status :: 3 - Alpha',
           'Intended Audience :: Testers',
