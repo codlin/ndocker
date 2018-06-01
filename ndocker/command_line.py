@@ -27,6 +27,10 @@ container_cmds = {
     "up": "Bring all containers up",
 }
 
+host_opts = {
+    "loglevel": "Open debug log when command running"
+}
+
 container_opts = {
     "path": "Path to a configuration file (default {})".format(DEFAULT_CONFIGURATION_PATH)
 }
@@ -34,8 +38,10 @@ container_opts = {
 # groups
 @click_ext.group(cls=MyGroup, help="A client for UTE to create containers and configure networks with openvswitch")
 @click.version_option('1.0')
-def cli(): #be equaivalent to: cli = click_ext.group(**attrs)(cli)
-    pass
+@click.option('loglevel', '--debug', is_flag=True, default=False, help=host_opts.get('loglevel'))  
+def cli(loglevel): #be equaivalent to: cli = click_ext.group(**attrs)(cli)
+    if loglevel:
+        set_loglevel()
 
 @click_ext.group("host", cls=MyGroup, section='Manage Commands', help=manage_cmds.get('host'))
 def host_cli():

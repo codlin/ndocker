@@ -40,12 +40,12 @@ class DockerNetworking(object):
         self.vswitch.del_br(br_name)
     
     def attach_container(self, container_name, br_name, veth_name, ip, tag=0, gw=False, txoff=False):
-        logger.info("Configure for container: {}".format(container_name))
+        logger.debug("Configure for container: {}".format(container_name))
         nspid = self.docker.nspid(container_name)
 
         self._create_veth(container_name, br_name, veth_name, tag)
 
-        logger.info("Container {}: add ip address {} for {}.\n".format(container_name, ip, veth_name))
+        logger.debug("Container {}: add ip address {} for {}.\n".format(container_name, ip, veth_name))
         self._config_ip(nspid, veth_name, ip, txoff)
 
         if gw and netaddr.valid_ipv4(gw):
@@ -60,33 +60,33 @@ class DockerNetworking(object):
         nspid = self.docker.nspid(container_name)
         # Generate vethnet pair
         veth_name_host = self._veth_name_host(container_name, container_veth)
-        logger.info("veth_name_host: {}".format(veth_name_host))
+        logger.debug("veth_name_host: {}".format(veth_name_host))
 
         run_cmd("ip link del {}".format(veth_name_host))
 
         veth_name_peer = "if.{:.6f}".format(time.time())[-8:].replace('.', '')
-        logger.info("veth_name_peer: {}".format(veth_name_peer))
+        logger.debug("veth_name_peer: {}".format(veth_name_peer))
 
         res = run_cmd("ip link add {} type veth peer name {}".format(veth_name_peer, veth_name_host)).replace('\n', '')
         if 'long' in res:
             logger.error(res)
             sys.exit(1)
-        logger.info("Create veth pair (host:{}, container_out:{}) for container {}.".format(veth_name_host, veth_name_peer, container_name))
+        logger.debug("Create veth pair (host:{}, container_out:{}) for container {}.".format(veth_name_host, veth_name_peer, container_name))
 
         self.vswitch.del_port(br_name, veth_name_host)
 
         res = self.vswitch.add_port(br_name, veth_name_host, tag_id)
-        logger.info("Add port {} into {}.".format(veth_name_host, br_name))
+        logger.debug("Add port {} into {}.".format(veth_name_host, br_name))
 
         run_cmd("ifconfig " + veth_name_host + " up")
 
         run_cmd("ip link set dev {} name {} netns {}".format(veth_name_peer, container_veth, nspid))
-        logger.info("Container {}: map ip device (container_out:{}, container_in:{}).".format(container_name, veth_name_peer, container_veth))
+        logger.debug("Container {}: map ip device (container_out:{}, container_in:{}).".format(container_name, veth_name_peer, container_veth))
 
         #activate veth in container
         run_cmd("nsenter -t {} -n ip link set dev {} up".format(nspid, container_veth))
 
-        logger.info("Container {}: create ethnet {} successfully.".format(container_name, container_veth))
+        logger.debug("Container {}: create ethnet {} successfully.".format(container_name, container_veth))
     
     def _veth_name_host(self, container_name, veth_name):
         return "-".join([container_name, veth_name])

@@ -26,12 +26,12 @@ def run(args):
     return popen
 
 def run_cmd(args):
-    logger.info(args)
+    logger.debug(args)
     p = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     out = []
     while True:
         line = p.stdout.readline()
-        logger.info(line)
+        logger.debug(line)
         out.append(line)
         if line == '' and p.poll() != None:
             break
@@ -51,7 +51,7 @@ class SshClient(object):
         try:
             #self.ssh.load_system_host_keys()
             self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            logger.info("{}:{}/{}".format(ip, user, passwd))
+            logger.debug("{}:{}/{}".format(ip, user, passwd))
             self.ssh.connect(hostname=ip, port=port, username=user, password=passwd, timeout=20)
         except paramiko.AuthenticationException:
             self.ssh = None
@@ -61,5 +61,5 @@ class SshClient(object):
             raise Exception("SSH Error: Server is unreachable!")
         
     def run_cmd(self, command):
-        logger.info(command)
+        logger.debug(command)
         return self.ssh.exec_command(command)

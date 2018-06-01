@@ -30,7 +30,7 @@ class Host(NE):
     
     def reset_networks(self):
         vswitches = self.infos.get('vswitches')
-        logger.info(vswitches)
+        logger.debug(vswitches)
         for vswitch in vswitches:
             self.networking.del_bridge(vswitch.get('bridge'))
         
@@ -56,14 +56,14 @@ class Container(NE):
         docker = DockerCmd()
         for container in self.cfg.containers():
             if not docker.isExist(container):
-                logger.info('Container {} does not exist.'.format(container))
+                logger.debug('Container {} does not exist.'.format(container))
                 self._create_service(container)
             
             docker.restart(container)
-            time.sleep(3)
+            time.sleep(1)
 
             if not docker.isHealth(container):
-                logger.info('Create {} failed.'.format(container))
+                logger.error('Create {} failed.'.format(container))
                 raise DockerCmdExecError()
          
         self.create_networks()
@@ -103,5 +103,5 @@ class Container(NE):
         time.sleep(3)
 
         if not docker.isHealth(container):
-            logger.info('Create {} failed.'.format(container))
+            logger.error('Create {} failed.'.format(container))
             raise DockerCmdExecError()

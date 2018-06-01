@@ -10,6 +10,12 @@ data = os.path.join(root, 'data')
 HOME = expanduser("~")
 DEFAULT_CONFIGURATION_PATH = os.path.join(HOME, ".ndocker")
 
+def set_loglevel():
+    import logging
+    logger = logging.getLogger('ndocker')
+    if len(logger.handlers) != 0:
+        logger.setLevel(logging.DEBUG)
+
 def create_host_cfg(filename, dest):
     if not filename.endswith('.yaml'):
         filename = '{}.yaml'.format(filename)

@@ -19,7 +19,7 @@ logger = logging.getLogger('ndocker')
 if len(logger.handlers) == 0:
     # create console handler and set level
     handler = logging.StreamHandler()
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.ERROR)
 
     # create formatter
     formatter = logging.Formatter("%(asctime)s %(filename)s:%(lineno)d [%(levelname)s]: %(message)s", '%Y-%m-%d %H:%M:%S')

@@ -85,7 +85,7 @@ class DockerCmd(object):
     def isExist(self, container):
         res = self.ps("-a --format '{{.Names}}' ")
         if container not in '\n'.join(res):
-            logger.info('Container {} does not exist.'.format(container))
+            logger.debug('Container {} does not exist.'.format(container))
             return False
         
         return True
@@ -93,7 +93,7 @@ class DockerCmd(object):
     def isHealth(self, container):
         res = self.ps("--filter status=running  --filter 'name={}$' ".format(container))
         if ' {}'.format(container) not in '\n'.join(res):
-            logger.info('Container {} is not in health.'.format(container))
+            logger.debug('Container {} is not in health.'.format(container))
             return False
         
         return True
