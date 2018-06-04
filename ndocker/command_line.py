@@ -151,4 +151,4 @@ cli.add_command(host_cli)
 cli.add_command(container_cli)
 
 if __name__ == '__main__':
-    cli()
+    cli(loglevel=True)
