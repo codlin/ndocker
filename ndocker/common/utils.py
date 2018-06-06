@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import subprocess
-import paramiko
 import socket
 
 import logger
