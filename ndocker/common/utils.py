@@ -38,28 +38,3 @@ def run_cmd(args):
     
     return ''.join(out)
 
-class SshClient(object):
-    def __init__(self, host, user, passwd, port=22):
-        self._connect(host, port, user, passwd)
-
-    def __del__(self):
-        if self.ssh != None:
-            self.ssh.close()
-
-    def _connect(self, ip, port, user, passwd):
-        self.ssh = paramiko.SSHClient()
-        try:
-            #self.ssh.load_system_host_keys()
-            self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            logger.debug("{}:{}/{}".format(ip, user, passwd))
-            self.ssh.connect(hostname=ip, port=port, username=user, password=passwd, timeout=20)
-        except paramiko.AuthenticationException:
-            self.ssh = None
-            raise Exception("SSH Error: Authentication failed!")
-        except socket.error:
-            self.ssh = None
-            raise Exception("SSH Error: Server is unreachable!")
-        
-    def run_cmd(self, command):
-        logger.debug(command)
-        return self.ssh.exec_command(command)

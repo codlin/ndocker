@@ -39,7 +39,7 @@ setup(name='ndocker',
           'Topic :: Software Development :: Libraries :: Python Modules',
           'License :: OSI Approved :: Apache License',
           'Programming Language :: Python :: 2.7', ],
-       install_requires=['Click==6.7', ],
+       install_requires=['Click==6.7', 'netaddr'],
        entry_points={
            'console_scripts': [
            'ndocker=ndocker.command_line:cli'],},
