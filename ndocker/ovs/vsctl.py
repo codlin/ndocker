@@ -114,6 +114,8 @@ class VSCtl(object):
             self.run('del-br {}'.format(br_name))
     
     def add_port(self, br_name, port_name, tag_id=0):
+        self.del_port(br_name, port_name)
+        
         tag = "" if tag_id==0 or tag_id == "" else "tag={}".format(tag_id)
         cmd = "add-port {} {} {}".format(br_name, port_name, tag)
         result = self.run(cmd, parser=line_parser)
