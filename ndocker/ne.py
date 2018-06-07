@@ -46,7 +46,7 @@ class Container(NE):
             for br_name, network in infos.networks.items():
                 for info in network:
                     ip = info.get('ip')
-                    tag = info.get('vtag')
+                    tag = info.get('vtag', 0)
                     gw = info.get('gw', False)
                     veth_name = "eth{}".format(i)
                     i += 1
