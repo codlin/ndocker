@@ -105,7 +105,7 @@ class VSCtl(object):
     def add_br(self, br_name):
         if self.br_exist(br_name):
             logger.error('Bridge {} already exist.'.format(br_name))
-            sys.exit(1)
+            return 0
         
         self.run('add-br {}'.format(br_name))
     
