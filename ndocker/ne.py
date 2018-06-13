@@ -76,9 +76,9 @@ class Container(NE):
             infos = self.cfg.infos(container)
             i = 0 if infos.network_mode == 'none' else 1
             for br_name, network in infos.networks:
-                for info in network:
-                self.networking.dettach_container(container, br_name, "eth{}".format(i))
-                i += 1
+                for _ in network:
+                    self.networking.dettach_container(container, br_name, "eth{}".format(i))
+                    i += 1
     
     def restart_service(self):
         self.stop_service()
