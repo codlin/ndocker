@@ -43,12 +43,13 @@ class Container(NE):
         for container in self.cfg.containers():
             infos = self.cfg.infos(container)
             i = 0 if infos.network_mode == 'none' else 1
-            for br_name, network in infos.networks.items():
+            for br_name, network in infos.networks:
                 for info in network:
                     ip = info.get('ip')
                     tag = info.get('vtag', 0)
                     gw = info.get('gw', False)
                     veth_name = "eth{}".format(i)
+                    logger.debug("eth{}".format(i))
                     i += 1
                     self.networking.attach_container(container, br_name, veth_name, ip, tag, gw, txoff=(br_name == 'br-s1'))
            
@@ -74,7 +75,7 @@ class Container(NE):
             docker.stop(container)
             infos = self.cfg.infos(container)
             i = 0 if infos.network_mode == 'none' else 1
-            for br_name, _ in infos.networks.items():
+            for br_name, _ in infos.networks:
                 self.networking.dettach_container(container, br_name, "eth{}".format(i))
                 i += 1
     
