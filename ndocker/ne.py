@@ -75,7 +75,8 @@ class Container(NE):
             docker.stop(container)
             infos = self.cfg.infos(container)
             i = 0 if infos.network_mode == 'none' else 1
-            for br_name, _ in infos.networks:
+            for br_name, network in infos.networks:
+                for info in network:
                 self.networking.dettach_container(container, br_name, "eth{}".format(i))
                 i += 1
     
