@@ -48,7 +48,8 @@ class ServicesCfg(object):
             return None
         
         container = self.services.get(container_name)
-        container['networks'] = ((i, self.networks[i]) for i in container['networks'])
+        networks = [(i, self.networks[i]) for i in container['networks']]
+        container['networks'] = networks
         return ContainerCfg(container_name, **container)
 
     def _verify_data(self):
