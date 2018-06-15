@@ -33,6 +33,10 @@ class ServicesCfg(object):
 
         self._verify_data()
 
+        for c in self.containers():
+            container = self.services.get(c)
+            container['networks'] = [(i, self.networks[i]) for i in container['networks']]
+
     '''
     Return containers name in list.
     '''
@@ -48,13 +52,6 @@ class ServicesCfg(object):
             return None
         
         container = self.services.get(container_name)
-        # container['networks'] = [(i, self.networks[i]) for i in container['networks']]
-        networks = list()
-        for br in container['networks']:
-            logger.debug(br)
-            networks.append((br, self.networks[br]))
-        container['networks'] = networks
-
         return ContainerCfg(container_name, **container)
 
     def _verify_data(self):
