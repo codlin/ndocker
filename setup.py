@@ -35,11 +35,11 @@ setup(name='ndocker',
       cmdclass={'install': Install, },
       classifiers=[
           'Development Status :: 3 - Alpha',
-          'Intended Audience :: Testers',
+          'Intended Audience :: Developers',
           'Topic :: Software Development :: Libraries :: Python Modules',
-          'License :: OSI Approved :: Apache License',
+          'License :: OSI Approved :: Apache Software License',
           'Programming Language :: Python :: 2.7', ],
-       install_requires=['Click==6.7', 'netaddr'],
+       install_requires=['Click==6.7', 'netaddr', 'pyyaml'],
        entry_points={
            'console_scripts': [
            'ndocker=ndocker.command_line:cli'],},
