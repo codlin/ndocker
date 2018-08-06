@@ -33,7 +33,7 @@ class DockerNetworking(object):
         
         run_cmd('ifconfig {} up'.format(br_name))
 
-        if netaddr.valid_ipv4(br_ip):
+        if netaddr.valid_ipv4(br_ip) or netaddr.valid_ipv6(br_ip):
             run_cmd('ifconfig {} {}'.format(br_name, br_ip))
     
     def del_bridge(self, br_name):
@@ -48,7 +48,7 @@ class DockerNetworking(object):
         logger.debug("Container {}: add ip address {} for {}.\n".format(container_name, ip, veth_name))
         self._config_ip(nspid, veth_name, ip, txoff)
 
-        if gw and netaddr.valid_ipv4(gw):
+        if gw and netaddr.valid_ipv4(gw) or netaddr.valid_ipv6(gw):
             self._config_add_route(container_name, gw)
     
     def dettach_container(self, container_name, br_name, veth_name):
@@ -86,6 +86,9 @@ class DockerNetworking(object):
         #activate veth in container
         run_cmd("nsenter -t {} -n ip link set dev {} up".format(nspid, container_veth))
 
+        # for ipv6
+        run_cmd("docker exec -t -i {} {}".format(container_name, "sysctl net.ipv6.conf.all.disable_ipv6=0"))
+
         logger.debug("Container {}: create ethnet {} successfully.".format(container_name, container_veth))
     
     def _veth_name_host(self, container_name, veth_name):
@@ -100,6 +103,7 @@ class DockerNetworking(object):
                 time.sleep(1)
         
     def _config_add_route(self, container_name, gw_ip):
-        cmd = "docker exec -t -i {} sudo route add default gw {}".format(container_name, gw_ip)
+        ipv6_flag = "-A inet6" if ":" in gw_ip else ""
+        cmd = "docker exec -t -i {} sudo route {} add default gw {}".format(container_name, ipv6_flag, gw_ip)
         run_cmd(cmd)
     
