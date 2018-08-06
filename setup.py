@@ -26,7 +26,7 @@ class Install(install):
         install.run(self)
 
 setup(name='ndocker',
-      version='1.0.2',
+      version='1.0.3',
       description='docker network configration',
       long_description=long_description,
       url='http://github.com/codlin/ndocker',
