@@ -2,7 +2,7 @@
 
 Origin:
 
-Docker networking is a boring job in our daily testing job.
-We run many contaniers on one server and have to config several interfaces for each container and isolate IPs among them. and when container restarted, all networks are lost.
+Docker container network configration is a repetitive job in our daily work.
+We run many contaniers on a server, and configure several interfaces for each container. When container restarted, all networks are lost.
 
-That's why we neet the project.
+so we need a tool to get things done, that'all.
