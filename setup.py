@@ -29,7 +29,7 @@ class Install(install):
 
 
 setup(name='ndocker',
-      version='1.0.4',
+      version='1.0.5',
       description='docker network configration',
       long_description=long_description,
       url='http://github.com/codlin/ndocker',
