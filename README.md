@@ -1,6 +1,6 @@
 # ndocker
 
-## Docker network configration for UTE
+## Intoduction: docker network configration for UTE
 
 Origin:
 
@@ -9,12 +9,12 @@ We run many contaniers on a server, and configure several interfaces for each co
 
 so we need a tool to get things done, that'all.
 
-Publish in pypi.org
-https://pypi.org/project/ndocker
+## Get started
 
-Command:
+For centos
 
 ```
-python setup.py sdist
-twine upload dist/*
+yum -y install epel-release
+yum -y install python-pip
+pip install ndocker
 ```
