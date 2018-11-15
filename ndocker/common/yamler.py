@@ -14,11 +14,12 @@
 
 import yaml
 
+
 class Yaml(object):
     def __init__(self, yaml_file):
         instream = file(yaml_file, 'r')
         self.__dict__ = yaml.safe_load(instream)
-    
+
     @property
     def infos(self):
         return self.__dict__
@@ -26,7 +27,7 @@ class Yaml(object):
     def update(self, **kwargs):
         if kwargs:
             self.__dict__.update(kwargs)
-    
+
     def dump(self, to_path_file, flow_style=False):
         outstream = file(to_path_file, 'w')
         yaml.dump(self.__dict__, outstream, default_flow_style=flow_style)

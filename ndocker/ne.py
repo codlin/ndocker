@@ -73,7 +73,7 @@ class Container(NE):
                 raise DockerCmdExecError()
 
             infos = self.cfg.infos(container)
-            cmd = "exec -t -i {} sudo sh -c \"echo '127.0.0.1  {}'>>/etc/hosts\"".format(
+            cmd = "exec -u root -it {} sh -c \"echo '127.0.0.1  {}'>>/etc/hosts\"".format(
                 container, infos.hostname)
             docker.execute(cmd)
 
