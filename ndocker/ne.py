@@ -109,10 +109,20 @@ class Container(NE):
         docker.pull(infos.image)
 
         logger.debug("container infos: {}".format(infos.__dict__))
-        cmd = "--name {} --hostname {} --net='{}' -p {} --init --restart=always -e VNC_RESOLUTION={} -v {} --privileged -d {}".format(
+        res_limit_cpus = ""
+        if infos.res_limit_cpus:
+            res_limit_cpus = "--cpus {}".format(infos.res_limit_cpus)
+
+        res_limit_memory = ""
+        if infos.res_limit_memory:
+            res_limit_memory = "--cpus {}".format(infos.res_limit_cpus)
+
+        cmd = "--name {} --hostname {} --net='{}' -p {} --init --restart=always -e VNC_RESOLUTION={} {} {} -v {} --privileged -d {}".format(
             container, infos.hostname, infos.network_mode, ' -p '.join(
                 infos.ports),
-            infos.vnc_resolution, ' -v '.join(infos.volumes), infos.image)
+            infos.vnc_resolution,
+            res_limit_cpus, res_limit_memory,
+            ' -v '.join(infos.volumes), infos.image)
         docker.run(cmd)
         time.sleep(3)
 
