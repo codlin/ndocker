@@ -15,6 +15,10 @@ services:
       - br-s1
       - br-in
     vnc_resolution: 1366x768
+    resources:
+      limits:
+        cpus: "1.25"
+        memory: 2G
 networks:
   br-rd:
     - ip: 0.0.0.0/24
